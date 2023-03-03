@@ -90,6 +90,10 @@ const SignIn = () => {
       >
         Sign In
       </Button>
+      <div className={styles.already}>
+        <span>Don't have an account yet?</span>
+        <Link to="/signUp">Sign Up</Link>
+      </div>
     </form> : <ProgressBar/>
     }
     </>
