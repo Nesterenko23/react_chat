@@ -12,7 +12,7 @@ const ProgressBar = () => {
         justifyContent: "center",
       }}
     >
-      <CircularProgress sx={{color: "#7454fa"}}/>
+      <CircularProgress sx={{ color: "#7454fa" }} />
     </div>
   );
 };

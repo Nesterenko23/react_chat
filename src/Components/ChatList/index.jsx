@@ -49,20 +49,21 @@ const ChatList = ({ setRespValue }) => {
         uid: el.uid,
         displayName: el.displayName,
         photoURL: el.photoURL,
-        onlineStatus: chatUserState.data().onlineState
+        onlineStatus: chatUserState.data().onlineState,
       })
     );
 
-    const combainedUID = currentUser.uid > el.uid 
-    ? currentUser.uid + el.uid
-    : el.uid + currentUser.uid
+    const combainedUID =
+      currentUser.uid > el.uid
+        ? currentUser.uid + el.uid
+        : el.uid + currentUser.uid;
 
     await updateDoc(doc(db, "users", currentUser.uid), {
-      currentChatID: combainedUID
-    })
+      currentChatID: combainedUID,
+    });
     await updateDoc(doc(db, "users", currentUser.uid, "chatUsers", el.uid), {
-      lastMessages: []
-    })
+      lastMessages: [],
+    });
     // await updateDoc(doc(db, "users", el.uid), {
     //   currentChatID: currentUser.uid + el.uid
     // })
@@ -96,7 +97,7 @@ const ChatList = ({ setRespValue }) => {
                 badgeContent={el.lastMessages?.length}
                 sx={{
                   alignSelf: "center",
-                  color: 'white',
+                  color: "white",
                   "& .MuiBadge-badge": {
                     backgroundColor: "rgba(150,93,233,1)",
                   },
