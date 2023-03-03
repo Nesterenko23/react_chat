@@ -1,0 +1,52 @@
+form {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  padding: 30px;
+  margin: auto;
+  height: fit-content;
+  background-color: white;
+  box-shadow: 0px 0px 50px rgba(112, 7, 141, 0.246);
+  width: 350px;
+  border-radius: 10px;
+  input {
+    height: 56px;
+    padding: 0px 10px;
+    font-size: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.255);
+    border-radius: 10px;
+    margin: 10px 0px;
+  }
+  label {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  .avatarInput {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+  }
+  h1 {
+    text-align: center;
+    color: #4b28fa;
+  }
+  .errorBlock {
+    padding: 10px;
+    border-radius: 10px;
+    background-color: rgb(249, 186, 186);
+    span {
+      color: rgb(96, 15, 15);
+    }
+  }
+  .already {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    a {
+      margin-left: 5px;
+    }
+  }
+}
+@media (max-width: 1100px) {
+}

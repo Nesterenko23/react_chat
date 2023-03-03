@@ -1,0 +1,21 @@
+.searchList {
+    overflow: auto;
+}
+.chatUser {
+    height: 72px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .chatUserData {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        flex-grow: 1;
+        height: 100%;
+        margin-left: 16px;
+        .userName {
+            font-weight: 600;
+        }
+    }
+}
