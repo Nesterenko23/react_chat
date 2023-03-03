@@ -31,45 +31,52 @@ const SignUp = () => {
 
   const registration = async (data, e) => {
     e.preventDefault();
-    setLoading(true);
-    const userCredendial = await createUserWithEmailAndPassword(
-      auth,
-      data.email,
-      data.password
-    );
-    await updateProfile(auth.currentUser, { displayName: data.userName });
-
-    if (userPhoto != null) {
-      const userPhotoRef = ref(
-        storage,
-        `usersPhotos/${userCredendial.user.uid}`
+    try {
+      const userCredendial = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
       );
-
-      const uploadPhoto = await uploadBytes(userPhotoRef, userPhoto);
-
-      const userPhotoURL = await getDownloadURL(uploadPhoto.ref);
-
-      await updateProfile(auth.currentUser, { photoURL: userPhotoURL });
+      setLoading(true);
+      await updateProfile(auth.currentUser, { displayName: data.userName });
+  
+      if (userPhoto != null) {
+        const userPhotoRef = ref(
+          storage,
+          `usersPhotos/${userCredendial.user.uid}`
+        );
+  
+        const uploadPhoto = await uploadBytes(userPhotoRef, userPhoto);
+  
+        const userPhotoURL = await getDownloadURL(uploadPhoto.ref);
+  
+        await updateProfile(auth.currentUser, { photoURL: userPhotoURL });
+      }
+  
+      setDoc(doc(db, "users", userCredendial.user.uid), {
+        uid: userCredendial.user.uid,
+        displayName: data.userName,
+        email: data.email,
+        photoURL: auth.currentUser.photoURL,
+        onlineState: true,
+        currentChatID: "",
+      });
+      navigate("/home");
     }
-
-    setDoc(doc(db, "users", userCredendial.user.uid), {
-      uid: userCredendial.user.uid,
-      displayName: data.userName,
-      email: data.email,
-      photoURL: auth.currentUser.photoURL,
-      onlineState: true,
-      currentChatID: "",
-    });
-    reset();
-    setLoading(false);
-    navigate("/home");
+    catch(error) {
+      alert(error)
+    }
+    finally {
+      reset();
+      setLoading(false);
+    }
   };
 
   return (
     <>
       {loading == false ? (
         <>
-          <div style={{ height: "100%", width: "50%" }}>
+          <div className={styles.formImage} style={{ height: "100%", width: "50%" }}>
             <img
               src={formImage}
               style={{ width: "100%", height: "100%" }}

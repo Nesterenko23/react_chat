@@ -1,22 +1,37 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import { Routes, Route } from 'react-router-dom'
-import SignUp from './Pages/SignUp';
-import SignIn from './Pages/SignIn';
-import Home from './Pages/HomePage';
-import { setChangedWidth } from './Redux/Slices/screenParamsSlice';
-import { useSelector, useDispatch } from 'react-redux';
+import LinearProgress from '@mui/material/LinearProgress';
 import styles from './app.module.scss'
-import PageNotFound from './Components/PageNotFound';
 function App() {
+
+  const SignIn = React.lazy(
+    () => import(/* webpackChunkName: "SignInPage" */ "./Pages/SignIn")
+  );
+  const SignUp = React.lazy(
+    () => import(/* webpackChunkName: "SignUpPage" */ "./Pages/SignUp")
+  );
+  const Home = React.lazy(
+    () => import(/* webpackChunkName: "HomePage" */ "./Pages/HomePage")
+  );
+  const PageNotFound = React.lazy(
+    () => import(/* webpackChunkName: "PageNotFound" */ "./Components/PageNotFound")
+  );
 
   return (
     <div className={styles.wrapper}>
-      <Routes>
+      <Suspense
+        fallback = {
+          <div style={{width: '100%'}}><LinearProgress sx={{width: '100%'}} color="secondary"/></div>
+        }
+      >
+        <Routes>
         <Route path="/" element={<SignIn/>}/>
         <Route path="/signUp" element={<SignUp/>}/>
         <Route path="/home" element={<Home/>}/>
         <Route path="*" element={<PageNotFound/>}/>
       </Routes>
+      </Suspense>
+      
     </div>
   );
 }

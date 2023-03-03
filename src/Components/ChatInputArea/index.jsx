@@ -74,7 +74,6 @@ const ChatInputArea = ({ messageEndRef }) => {
             messageID: combainedName,
             message: chatImageURL == "" ? chatMessage : chatImageURL,
             type: chatImageURL == "" ? "text" : "image",
-            status: "read",
             likedBy: [],
             timestamp: serverTimestamp(),
           }
@@ -108,7 +107,6 @@ const ChatInputArea = ({ messageEndRef }) => {
             messageID: combainedName,
             message: chatImageURL == "" ? chatMessage : chatImageURL,
             type: chatImageURL == "" ? "text" : "image",
-            status: currentChatID === currentUserChatID ? "read" : "unread",
             likedBy: [],
             timestamp: serverTimestamp(),
           }
@@ -136,7 +134,7 @@ const ChatInputArea = ({ messageEndRef }) => {
         );
       }
     } catch (error) {
-      console.log(error);
+      alert(error);
     } finally {
       setLoading(false);
       chatMessage != "" && setChatMessage("");

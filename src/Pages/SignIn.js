@@ -23,20 +23,27 @@ const SignIn = () => {
 
   const logIn = async (data, e) => {
     e.preventDefault();
-    setLoading(true);
-    await signInWithEmailAndPassword(auth, data.email, data.password);
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      setLoading(true);
+      await updateDoc(doc(db, "users", auth.currentUser.uid), {
       onlineState: true,
     });
-    setLoading(false);
     navigate("/home");
+    }
+    catch(error) {
+      alert(error)
+    }
+    finally {
+      setLoading(false);
+    }
   };
 
   return (
     <>
       {loading == false ? (
         <>
-          <div style={{ height: "100%", width: "50%" }}>
+          <div className={styles.formImage} style={{ height: "100%", width: "50%" }}>
             <img
               src={formImage}
               style={{ width: "100%", height: "100%" }}

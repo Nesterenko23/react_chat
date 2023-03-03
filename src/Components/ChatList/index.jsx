@@ -64,9 +64,6 @@ const ChatList = ({ setRespValue }) => {
     await updateDoc(doc(db, "users", currentUser.uid, "chatUsers", el.uid), {
       lastMessages: [],
     });
-    // await updateDoc(doc(db, "users", el.uid), {
-    //   currentChatID: currentUser.uid + el.uid
-    // })
 
     if (window.outerWidth <= 1100) {
       setRespValue("open");
