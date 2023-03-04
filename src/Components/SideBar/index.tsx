@@ -11,8 +11,14 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import { auth, db } from "../../firebase";
 import { Avatar, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../Redux/hooks";
+import { currentUserSelector } from "../../Redux/Slices/currentUserSlice";
 
-const SideBar = ({ respValue, setRespValue }) => {
+type SideBarProps = {
+  respValue: string;
+  setRespValue: (respValue: string) => void;
+};
+const SideBar = ({ respValue, setRespValue }: SideBarProps) => {
   const logOut = async () => {
     await updateDoc(doc(db, "users", currentUser.uid), {
       onlineState: false,
@@ -23,15 +29,15 @@ const SideBar = ({ respValue, setRespValue }) => {
 
   const [searchValue, setSearchValue] = React.useState("");
   const navigate = useNavigate();
-  const currentUser = useSelector((state) => state.currentUser.currentUser);
+  const currentUser = useAppSelector(currentUserSelector);
 
   return (
     <div
       className={styles.wrapper}
-      style={{ display: respValue == "open" && "none" }}
+      style={{ display: respValue == "open" ? "none" : "inline-block" }}
     >
       <div className={styles.searchBar}>
-        <Avatar src={currentUser.photoURL} />
+        <Avatar src={currentUser.photoURL ? currentUser.photoURL : ""} />
         <div className={styles.inputBlock}>
           <SearchIcon sx={{ color: "rgba(0, 0, 0, 0.42)" }} />
           <input

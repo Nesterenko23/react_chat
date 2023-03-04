@@ -23,16 +23,21 @@ import {
   updateDoc,
   arrayUnion,
 } from "firebase/firestore";
+import { currentUserSelector } from "../../Redux/Slices/currentUserSlice";
+import { useAppSelector } from "../../Redux/hooks";
 
-const ChatInputArea = ({ messageEndRef }) => {
-  const onEmojiClick = (event) => {
-    setChatMessage((prev) => prev + event.emoji);
-    setShowPicker(false);
-  };
+interface ChatInputAreaProps {
+  messageEndRef: React.MutableRefObject<HTMLDivElement | null>
+}
+const ChatInputArea = ({ messageEndRef }: ChatInputAreaProps) => {
+  // const onEmojiClick = (event) => {
+  //   setChatMessage((prev) => prev + event.emoji);
+  //   setShowPicker(false);
+  // };
 
-  const currentUser = useSelector((state) => state.currentUser.currentUser);
-  const chatUser = useSelector((state) => state.chatUser.chatUser);
-  const [chatImage, setChatImage] = React.useState(null);
+  const currentUser = useAppSelector(currentUserSelector);
+  const chatUser = useAppSelector((state) => state.chatUser.chatUser);
+  const [chatImage, setChatImage] = React.useState<File | null>(null);
   const [chatMessage, setChatMessage] = React.useState("");
   const [showPicker, setShowPicker] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -44,9 +49,9 @@ const ChatInputArea = ({ messageEndRef }) => {
         const combainedName =
           currentUser.uid + chatUser.uid + new Date().getMilliseconds();
         const chatUserData = await getDoc(doc(db, "users", chatUser.uid));
-        const currentChatID = chatUserData.data().currentChatID;
+        const currentChatID = chatUserData.data()?.currentChatID;
         const currentUserData = await getDoc(doc(db, "users", currentUser.uid));
-        const currentUserChatID = currentUserData.data().currentChatID;
+        const currentUserChatID = currentUserData.data()?.currentChatID;
 
         if (chatImage) {
           const userPhotoRef = ref(storage, `chatsImages/${combainedName}`);
@@ -139,7 +144,7 @@ const ChatInputArea = ({ messageEndRef }) => {
       setLoading(false);
       chatMessage != "" && setChatMessage("");
       chatImage != null && setChatImage(null);
-      messageEndRef.current.scrollIntoView();
+      messageEndRef.current?.scrollIntoView();
     }
   };
 
@@ -148,11 +153,11 @@ const ChatInputArea = ({ messageEndRef }) => {
       <IconButton sx={{ color: "rgba(99,88,238,1)" }}>
         <InsertEmoticonIcon onClick={() => setShowPicker((val) => !val)} />
       </IconButton>
-      {showPicker && (
+      {/* {showPicker && (
         <div style={{ position: "absolute", top: "25%", left: "30%" }}>
           <Picker onEmojiClick={onEmojiClick} />
         </div>
-      )}
+      )} */}
       <input
         placeholder="Message"
         value={chatMessage}
@@ -168,7 +173,9 @@ const ChatInputArea = ({ messageEndRef }) => {
           accept="image/*"
           type="file"
           onChange={(e) => {
+           if (e.target.files != null) {
             setChatImage(e.target.files[0]);
+           }
           }}
         />
         <ImageIcon />

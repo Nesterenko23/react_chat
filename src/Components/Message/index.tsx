@@ -1,11 +1,23 @@
 import React from "react";
 import styles from "./message.module.scss";
 import { useSelector } from "react-redux";
-import { updateDoc, doc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { updateDoc, doc, arrayUnion, arrayRemove, DocumentData } from "firebase/firestore";
 import { db } from "../../firebase";
-const Message = ({ message, obj }) => {
-  const currentUser = useSelector((state) => state.currentUser.currentUser);
-  const chatUser = useSelector((state) => state.chatUser.chatUser);
+import { currentUserSelector } from "../../Redux/Slices/currentUserSlice";
+import { useAppSelector } from "../../Redux/hooks";
+
+type ObjType = {
+  id: string,
+  messages: DocumentData
+}
+
+interface MessageProps {
+  message: string,
+  obj: ObjType
+}
+const Message = ({ message, obj }: MessageProps) => {
+  const currentUser = useAppSelector(currentUserSelector);
+  const chatUser = useAppSelector((state) => state.chatUser.chatUser);
 
   const likeMessage = async () => {
     if (obj.messages.likedBy.includes(currentUser.uid)) {
@@ -77,7 +89,7 @@ const Message = ({ message, obj }) => {
           obj.messages.uid == currentUser.uid
             ? "linear-gradient( 83.2deg,  rgba(150,93,233,1) 10.8%, rgba(99,88,238,1) 94.3% )"
             : "none",
-        padding: obj.messages.type == "image" && "0px 0px 10px 0px",
+        padding: obj.messages.type == "image" ? "0px 0px 10px 0px" : "10px",
         backgroundColor: obj.messages.uid == currentUser.uid ? "" : "white",
         borderRadius:
           obj.messages.uid == currentUser.uid
@@ -118,7 +130,7 @@ const Message = ({ message, obj }) => {
             </span>
           </div>
         )}
-        <span style={{ marginRight: obj.messages.type == "image" && "10px" }}>
+        <span style={{ marginRight: obj.messages.type == "image" ? "10px" : "0px" }}>
           {obj.messages.timestamp?.toDate().toLocaleTimeString().slice(0, 5)}
         </span>
       </div>

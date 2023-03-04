@@ -4,7 +4,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db, storage } from "../firebase";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import IconButton from "@mui/material/IconButton";
 import ImageIcon from "@mui/icons-material/Image";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -16,21 +16,27 @@ import styles from "./forms.module.scss";
 import { CircularProgress } from "@mui/material";
 
 const SignUp = () => {
-  const [userPhoto, setUserPhoto] = React.useState(null);
+  const [userPhoto, setUserPhoto] = React.useState<File>();
   const [loading, setLoading] = React.useState(false);
   const navigate = useNavigate();
+
+  type Inputs = {
+    userName: string,
+    email: string,
+    password: string
+  }
 
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     reset,
-  } = useForm({
+  } = useForm<Inputs>({
     mode: "onBlur",
   });
 
-  const registration = async (data, e) => {
-    e.preventDefault();
+  const registration: SubmitHandler<Inputs> = async (data, e) => {
+    e?.preventDefault();
     try {
       const userCredendial = await createUserWithEmailAndPassword(
         auth,
@@ -38,8 +44,9 @@ const SignUp = () => {
         data.password
       );
       setLoading(true);
-      await updateProfile(auth.currentUser, { displayName: data.userName });
-  
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, { displayName: data.userName });
+      }
       if (userPhoto != null) {
         const userPhotoRef = ref(
           storage,
@@ -49,15 +56,16 @@ const SignUp = () => {
         const uploadPhoto = await uploadBytes(userPhotoRef, userPhoto);
   
         const userPhotoURL = await getDownloadURL(uploadPhoto.ref);
-  
-        await updateProfile(auth.currentUser, { photoURL: userPhotoURL });
+        if (auth.currentUser) {
+          await updateProfile(auth.currentUser, { photoURL: userPhotoURL });
+        }
       }
   
       setDoc(doc(db, "users", userCredendial.user.uid), {
         uid: userCredendial.user.uid,
         displayName: data.userName,
         email: data.email,
-        photoURL: auth.currentUser.photoURL,
+        photoURL: auth.currentUser?.photoURL,
         onlineState: true,
         currentChatID: "",
       });
@@ -67,7 +75,6 @@ const SignUp = () => {
       alert(error)
     }
     finally {
-      reset();
       setLoading(false);
     }
   };
@@ -84,7 +91,7 @@ const SignUp = () => {
           </div>
           <form onSubmit={handleSubmit(registration)}>
             <h1>Sign Up</h1>
-            <label className={styles.label} for="username">
+            <label className={styles.label} htmlFor="username">
               Username
             </label>
             <input
@@ -110,7 +117,7 @@ const SignUp = () => {
                 </span>
               </div>
             )}
-            <label className={styles.label} for="email">
+            <label className={styles.label} htmlFor="email">
               Email
             </label>
             <input
@@ -128,7 +135,7 @@ const SignUp = () => {
                 </span>
               </div>
             )}
-            <label className={styles.label} for="password">
+            <label className={styles.label} htmlFor="password">
               Password
             </label>
             <input

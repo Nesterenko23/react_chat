@@ -15,18 +15,29 @@ import {
   updateDoc,
   where,
   getDocs,
+  DocumentData,
 } from "firebase/firestore";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { useDispatch, useSelector } from "react-redux";
 import ChatInputArea from "../ChatInputArea";
 import ProgressBar from "../ProgressBar";
-const ChatBar = ({ respValue, setRespValue }) => {
+import { useAppSelector } from "../../Redux/hooks";
+import { currentUserSelector } from "../../Redux/Slices/currentUserSlice";
+interface ChatBarProps {
+  respValue: string,
+  setRespValue: (respValue: string) => void;
+}
+const ChatBar = ({ respValue, setRespValue }: ChatBarProps) => {
+  type MessageType = {
+    id: string,
+    messages: DocumentData
+  }
   const dispatch = useDispatch();
-  const chatUser = useSelector((state) => state.chatUser.chatUser);
-  const currentUser = useSelector((state) => state.currentUser.currentUser);
-  const [allMessages, setAllMessages] = React.useState([]);
+  const chatUser = useAppSelector((state) => state.chatUser.chatUser);
+  const currentUser = useAppSelector(currentUserSelector);
+  const [allMessages, setAllMessages] = React.useState<MessageType[]>([]);
   const [loading, setLoading] = React.useState(false);
-  const messageEndRef = React.useRef();
+  const messageEndRef = React.useRef<HTMLDivElement | null>(null);
   React.useEffect(() => {
     if (chatUser.uid && currentUser.uid) {
       setLoading(true);
@@ -60,7 +71,7 @@ const ChatBar = ({ respValue, setRespValue }) => {
   return (
     <div
       className={styles.wrapper}
-      style={{ display: respValue == "open" && "inline-block" }}
+      // style={{ display: respValue == "open" && ? "inline-block" : "none" }}
     >
       <div className={styles.topBar}>
         {respValue == "open" && (
@@ -82,7 +93,7 @@ const ChatBar = ({ respValue, setRespValue }) => {
         <div className={styles.chatUserInfo}>
           <span className={styles.userName}>{chatUser.displayName}</span>
           <span className={styles.status}>
-            {chatUser.onlineStatus == true ? "online" : "offline"}
+            {chatUser.onlineStatus ? "online" : "offline"}
           </span>
         </div>
         <div className={styles.icons}>

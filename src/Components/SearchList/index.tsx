@@ -1,12 +1,18 @@
 import React from "react";
 import { db } from "../../firebase";
-import { collection, onSnapshot, setDoc, doc, getDoc, serverTimestamp } from "firebase/firestore";
+import { collection, onSnapshot, setDoc, doc, getDoc, serverTimestamp, DocumentData } from "firebase/firestore";
 import Avatar from "@mui/material/Avatar";
 import styles from "./searchList.module.scss";
 import { useSelector } from "react-redux";
-const SearchList = ({ searchValue, setSearchValue }) => {
-  const [allUsers, setAllUsers] = React.useState([]);
-  const currentUser = useSelector((state) => state.currentUser.currentUser)
+import { currentUserSelector, CurrentUserType } from "../../Redux/Slices/currentUserSlice";
+import { useAppSelector } from "../../Redux/hooks";
+type SearchBarProps = {
+  searchValue: string,
+  setSearchValue: (searchValue: string) => void;
+}
+const SearchList = ({ searchValue, setSearchValue }: SearchBarProps) => {
+  const [allUsers, setAllUsers] = React.useState<DocumentData[]>([]);
+  const currentUser = useAppSelector(currentUserSelector)
 
   React.useEffect(() => {
     const unsub = onSnapshot(collection(db, "users"), (snapshot) => {
@@ -16,7 +22,7 @@ const SearchList = ({ searchValue, setSearchValue }) => {
     return unsub;
   }, []);
 
-  const addChatUser = async (chatUser) => {
+  const addChatUser = async (chatUser: DocumentData) => {
 
     const chatUserRef = await getDoc(doc(db, "users", currentUser.uid, "chatUsers", chatUser.uid))
     const data = chatUserRef.data()
@@ -47,7 +53,7 @@ const SearchList = ({ searchValue, setSearchValue }) => {
     <div className={styles.searchList}>
       {allUsers
         .filter((item) =>
-          item.displayName.toLowerCase().includes(searchValue.toLowerCase())
+          item.displayName?.toLowerCase().includes(searchValue.toLowerCase())
         )
         .map((item) => {
           return (

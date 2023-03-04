@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Dispatch, SetStateAction} from "react";
 import Badge from "@mui/material/Badge";
 import Avatar from "@mui/material/Avatar";
 import styles from "./chatList.module.scss";
@@ -17,11 +17,16 @@ import {
 } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { setChatUser } from "../../Redux/Slices/chatUserSlice";
+import { ChatUserType, setChatUser } from "../../Redux/Slices/chatUserSlice";
 import ProgressBar from "../ProgressBar";
-const ChatList = ({ setRespValue }) => {
-  const currentUser = useSelector((state) => state.currentUser.currentUser);
-  const [chatUsers, setChatUsers] = React.useState([]);
+import { currentUserSelector } from "../../Redux/Slices/currentUserSlice";
+import { useAppSelector } from "../../Redux/hooks";
+interface ChatListProps {
+  setRespValue: (respValue: string) => void;
+}
+const ChatList = ({ setRespValue }: ChatListProps) => {
+  const currentUser = useAppSelector(currentUserSelector);
+  const [chatUsers, setChatUsers] = React.useState<ChatUserType[]>([]);
   const dispatch = useDispatch();
   const [loading, setLoading] = React.useState(false);
 
@@ -34,7 +39,7 @@ const ChatList = ({ setRespValue }) => {
           orderBy("lastSendTime", "desc")
         ),
         (snapshot) => {
-          setChatUsers(snapshot.docs.map((doc) => doc.data()));
+          setChatUsers(snapshot.docs.map((doc) => doc.data() as ChatUserType));
           setLoading(false);
         }
       );
@@ -42,14 +47,14 @@ const ChatList = ({ setRespValue }) => {
     }
   }, [currentUser]);
 
-  const selectChatUser = async (el) => {
+  const selectChatUser = async (el: ChatUserType) => {
     const chatUserState = await getDoc(doc(db, "users", el.uid));
     dispatch(
       setChatUser({
         uid: el.uid,
         displayName: el.displayName,
         photoURL: el.photoURL,
-        onlineStatus: chatUserState.data().onlineState,
+        onlineStatus: chatUserState.data()?.onlineState,
       })
     );
 

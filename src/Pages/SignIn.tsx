@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
@@ -7,26 +7,31 @@ import ProgressBar from "../Components/ProgressBar";
 import formImage from "../images/formImage.avif";
 import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import styles from "./forms.module.scss";
 const SignIn = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
+
+  type Inputs = {
+    email: string,
+    password: string
+  }
+
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
-    reset,
-  } = useForm({
+  } = useForm<Inputs>({
     mode: "onBlur",
   });
 
-  const logIn = async (data, e) => {
-    e.preventDefault();
+  const logIn: SubmitHandler<Inputs> = async (data, e) => {
+      e?.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       setLoading(true);
-      await updateDoc(doc(db, "users", auth.currentUser.uid), {
+      await updateDoc(doc(db, "users", userCredential.user.uid), {
       onlineState: true,
     });
     navigate("/home");
