@@ -1,5 +1,12 @@
 .searchList {
     overflow: auto;
+    &::-webkit-scrollbar {
+        display: none;
+      }
+      & {
+        -ms-overflow-style: none; 
+        scrollbar-width: none;
+      }
 }
 .chatUser {
     height: 72px;
